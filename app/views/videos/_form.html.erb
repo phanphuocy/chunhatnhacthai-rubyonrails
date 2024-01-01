@@ -1,0 +1,36 @@
+<%= simple_form_for(@video) do |f| %>
+  <%= f.error_notification %>
+  <%= f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present? %>
+  <div class="form-inputs">
+    <div class="field">
+      <div class="control">
+        <%= f.input :title,
+          input_html: { class: "input" },
+          label_html: { class: "label" },
+          wrapper: false
+        %>
+      </div>
+    </div>
+    <div class="field">
+      <div class="control">
+        <%= f.input :description,
+          input_html: { class: "input" },
+          label_html: { class: "label" },
+          wrapper: false
+        %>
+      </div>
+    </div>
+    <div class="field">
+      <div class="control">
+        <%= f.input :user_id,
+          input_html: { class: "input" },
+          label_html: { class: "label" },
+          wrapper: false
+        %>
+      </div>
+    </div>
+  </div>
+  <div class="form-actions mt-5">
+    <%= f.button :submit, class: "button is-primary" %>
+  </div>
+<% end %>
