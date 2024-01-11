@@ -77,3 +77,6 @@ gem "devise", "~> 4.9"
 gem "bulma-rails", "~> 0.9.4"
 
 gem 'font-awesome-sass', '~> 6.5', '>= 6.5.1'
+
+gem "mini_magick"
+gem 'carrierwave', '~> 3.0'
