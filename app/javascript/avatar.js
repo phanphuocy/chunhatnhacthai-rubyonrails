@@ -1,7 +1,6 @@
 console.log("this page loads");
 
-$(document).on("ready turbolinks:load", function() {
-    console.log("add event");
+window.addEventListener("load", function() { // this line is difference from tutorial
     
     var Avatar = {
         previewAvatar() {
@@ -10,26 +9,34 @@ $(document).on("ready turbolinks:load", function() {
                     event.stopPropagation();
                     event.preventDefault();
 
-                    let files = event.target.files || event.dataTransfer.files;
+                    console.log(event.dataTransfer);
 
-                    for (var i = 0; i < files[i]; i++) {
-                        if (!files.type.match('image.*')) {
-                            continue;
-                        }
+                    let files = event.target.files || event.dataTransfer.files; 
+					// files is a FileList of File objects. List some properties.
+					for (var i = 0, f; f = files[i]; i++) {
+                        console.log('f: ', f);
 
-                        const reader = new FileReader();
+						// Only process image files.
+						if (!f.type.match('image.*')) {
+							continue;
+						}
+						const reader = new FileReader();
 
-                        render.onload = (function(theFile) {
-                            return function(e) {
-                                let span = document.createElement('span');
-                                span.innerHTML = ['<img class="thumb" src"', e.target.result, '" title="', theFile.name, '" />'].join();
-                                document.getElementById('list').insertBefore(span, null);
+						// Closure to capture the file information.
+						reader.onload = (function(theFile) {
+							return function(e) {
+								// Render thumbnail.
+								let span = document.createElement('span');
+								span.innerHTML = ['<img class="thumb" src="', event.target.result,
+									'" title="', escape(theFile.name), '"/>'
+								].join('');
+								document.getElementById('list').insertBefore(span, null);
+							};
+						})(f);
 
-                            }
-                        })(f);
-
-                        reader.readAsDataURL(F);
-                    }
+						// Read in the image file as a data URL.
+						reader.readAsDataURL(f);
+					}
                 }
 
                 function handleDragOver(event) {
@@ -47,29 +54,29 @@ $(document).on("ready turbolinks:load", function() {
                 if (dropZone) {
                     dropZone.addEventListener('dragover', handleDragOver, false);
                     dropZone.addEventListener('drop', handleFileSelect, false);
+
+                    dropZone.addEventListener('dragover', (e) => {
+                        dropZone.classList.add('fire');
+                    })
+    
+                    dropZone.addEventListener('dragleave', (e) => {
+                        dropZone.classList.remove('fire');
+                    })
+    
+                    dropZone.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        dropZone.classList.remove('fire');
+                        fileInput.files = e.dataTransfer.files;
+                        // if on /users/edit hide preview avatar on drop
+                        if (previewImage) {
+                            previewImage.style.display = 'none';
+                        }
+                        if (editUserForm) {
+                            dropZone.style.display = 'none';
+                        }
+    
+                    }, false)
                 }
-
-                dropZone.addEventListener('dragover', (e) => {
-                    dropZone.classList.add('fire');
-                })
-
-                dropZone.addEventListener('dragleave', (e) => {
-                    dropZone.classList.remove('fire');
-                })
-
-                dropZone.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    dropZone.classList.remove('fire');
-                    fileInput.files = e.dataTransfer.files;
-                    // if on /users/edit hide preview avatar on drop
-                    if (previewImage) {
-                        previewImage.style.display = 'none';
-                    }
-                    if (editUserForm) {
-                        dropZone.style.display = 'none';
-                    }
-
-                }, false)
 
                 target.addEventListener('dragover', (e)=>{
                     e.preventDefault();
@@ -77,8 +84,8 @@ $(document).on("ready turbolinks:load", function() {
                 }, false);
 
                 target.addEventListener('dragleave', (e)=>{
-                    dropZone.classList.remove('dragging');
-                    dropZone.classList.remove('fire');
+                    // dropZone.classList.remove('dragging');
+                    // dropZone.classList.remove('fire');
                 })
             }
         }
