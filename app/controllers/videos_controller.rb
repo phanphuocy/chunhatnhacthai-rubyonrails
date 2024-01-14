@@ -1,9 +1,10 @@
 class VideosController < ApplicationController
   before_action :set_video, only: %i[ show edit update destroy ]
+  before_action :authenticate_user!, only: [:edit, :update, :destroy]
 
   # GET /videos or /videos.json
   def index
-    @videos = Video.all
+    @videos = Video.all.order('created_at DESC')
   end
 
   # GET /videos/1 or /videos/1.json
@@ -12,7 +13,7 @@ class VideosController < ApplicationController
 
   # GET /videos/new
   def new
-    @video = Video.new
+    @video = current_user.video.build
   end
 
   # GET /videos/1/edit
@@ -21,7 +22,7 @@ class VideosController < ApplicationController
 
   # POST /videos or /videos.json
   def create
-    @video = Video.new(video_params)
+    @video = current_user.video.build(video_params)
 
     respond_to do |format|
       if @video.save
